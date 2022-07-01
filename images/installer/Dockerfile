@@ -1,4 +1,4 @@
-FROM centos:7
+FROM quay.io/centos/centos:stream8
 
 MAINTAINER OpenShift Team <dev@lists.openshift.redhat.com>
 
