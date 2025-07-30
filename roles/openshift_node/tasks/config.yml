@@ -70,6 +70,12 @@
     state: directory
   register: temp_dir
 
+- name: Create local temp directory
+  tempfile:
+    state: directory
+  register: local_temp_dir
+  delegate_to: localhost
+
 - name: Copy 00-runc-crc.yaml ContainerRuntimeConfig
   copy:
     content: >
@@ -83,7 +89,9 @@
             pools.operator.machineconfiguration.openshift.io/{{ openshift_node_machineconfigpool }}: ''
         containerRuntimeConfig:
           defaultRuntime: "runc"
-    dest: "{{ temp_dir.path }}/openshift-ansible-runc-crc.yaml"
+    dest: "{{ local_temp_dir.path }}/openshift-ansible-runc-crc.yaml"
+  delegate_to: localhost
+
 
 - name: Apply use-runc ContainerRuntimeConfig
   command: >
@@ -98,9 +106,9 @@
 
 # it'd probably be better to retrieve the content includes "use-runc" from above?
 # no idea what a reasonable time for MachineConfig to regenerate looks like
-- name: Wait 30s if oc_apply
+- name: Wait 10s for new rendered MachineConfig
   pause:
-    seconds: 30
+    seconds: 10
   when:
   - oc_apply.stdout | regex_search("(created|configured)")
 
@@ -221,6 +229,11 @@
   - name: Remove temp directory
     file:
       path: "{{ temp_dir.path }}"
+      state: absent
+
+  - name: Remove local temp directory
+    file:
+      path: "{{ local_temp_dir.path }}"
       state: absent
 
   - name: Reboot the host and wait for it to come back
