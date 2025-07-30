@@ -117,7 +117,7 @@
   until:
   - bootstrap_ignition.status is defined
   - bootstrap_ignition.status == 200
-  - bootstrap_ignition.body is regex("openshift-ansible-use-runc")
+  - bootstrap_ignition.content is search("openshift-ansible-use-runc")
 
 # registries.conf is listed twice in the config, the second one is the right one
 - name: Extract the last registries.conf file from bootstrap.ign
