@@ -91,7 +91,7 @@
   delegate_to: localhost
   register: oc_apply
   until:
-  - oc_apply.rc == 0
+  - oc_apply.rc = 0
   - oc_apply.stdout | regex_search("(created|configured|unchanged)")
   retries: 36
   delay: 5
