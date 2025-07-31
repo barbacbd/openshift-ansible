@@ -95,19 +95,22 @@
 
 - name: Apply use-runc ContainerRuntimeConfig
   command: >
-    oc apply -f {{ local_temp_dir.path }}/openshift-ansible-runc-crc.yaml
+    oc apply -f "{{ local_temp_dir.temp_dir.path }}/openshift-ansible-runc-crc.yaml"
   delegate_to: localhost
   register: oc_apply
   until:
   - oc_apply.rc == 0
+  - oc_apply.stdout | regex_search("(created|configured|unchanged)")
   retries: 36
   delay: 5
 
 # it'd probably be better to retrieve the content includes "use-runc" from above?
 # no idea what a reasonable time for MachineConfig to regenerate looks like
-- name: Wait 15s for new rendered MachineConfig
+- name: Wait 10s for new rendered MachineConfig
   pause:
-    seconds: 15
+    seconds: 10
+  when:
+  - oc_apply.stdout | regex_search("(created|configured)")
 
 - name: Fetch bootstrap ignition file locally
   uri:
@@ -123,6 +126,7 @@
   until:
   - bootstrap_ignition.status is defined
   - bootstrap_ignition.status == 200
+  - bootstrap_ignition.content is search("openshift-ansible-use-runc")
 
 # registries.conf is listed twice in the config, the second one is the right one
 - name: Extract the last registries.conf file from bootstrap.ign
