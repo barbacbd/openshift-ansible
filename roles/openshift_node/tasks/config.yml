@@ -99,8 +99,7 @@
 # it'd probably be better to retrieve the content includes "use-runc" from above?
 # no idea what a reasonable time for MachineConfig to regenerate looks like
 - name: Wait 30s if oc_apply
-  pause: 
-    seconds: 30
+  pause: 30s
   when:
   - oc_apply.stdout is regex("(created|configured)")
 
