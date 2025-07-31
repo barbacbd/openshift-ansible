@@ -58,7 +58,7 @@
 
 - block:
   - name: Pull MCD image
-    command: "podman --runtime runc pull --tls-verify={{ openshift_node_tls_verify }} --authfile /var/lib/kubelet/config.json {{ l_mcd_image }}"
+    command: "podman pull --tls-verify={{ openshift_node_tls_verify }} --authfile /var/lib/kubelet/config.json {{ l_mcd_image }}"
     register: podman_pull
     until:
       podman_pull.stdout != ''
@@ -66,7 +66,7 @@
     delay: 10
 
   - name: Apply machine config
-    command: "podman --runtime runc run {{ podman_mounts }} {{ podman_flags }} {{ mcd_command }}"
+    command: "podman run {{ podman_mounts }} {{ podman_flags }} {{ mcd_command }}"
     vars:
       podman_flags: "--pid=host --privileged --rm --entrypoint=/usr/bin/machine-config-daemon -ti {{ l_mcd_image }}"
       podman_mounts: "-v /:/rootfs"

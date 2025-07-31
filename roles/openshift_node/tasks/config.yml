@@ -186,7 +186,7 @@
 
 - block:
   - name: Pull release image
-    command: "podman --runtime runc pull --tls-verify={{ openshift_node_tls_verify }} --authfile {{ temp_dir.path }}/pull-secret.json {{ l_release_image }}"
+    command: "podman pull --tls-verify={{ openshift_node_tls_verify }} --authfile {{ temp_dir.path }}/pull-secret.json {{ l_release_image }}"
     register: podman_pull
     until:
       podman_pull.stdout != ''
@@ -194,7 +194,7 @@
     delay: 10
 
   - name: Get machine controller daemon image from release image
-    command: "podman --runtime runc run --rm {{ l_release_image }} image machine-config-operator"
+    command: "podman run --rm {{ l_release_image }} image machine-config-operator"
     register: release_image_mcd
   environment:
     http_proxy: "{{ http_proxy | default('')}}"
@@ -203,7 +203,7 @@
 
 - block:
   - name: Pull MCD image
-    command: "podman --runtime runc pull --tls-verify={{ openshift_node_tls_verify }} --authfile {{ temp_dir.path }}/pull-secret.json {{ release_image_mcd.stdout }}"
+    command: "podman pull --tls-verify={{ openshift_node_tls_verify }} --authfile {{ temp_dir.path }}/pull-secret.json {{ release_image_mcd.stdout }}"
     register: podman_pull
     until:
       podman_pull.stdout != ''
@@ -211,7 +211,7 @@
     delay: 10
 
   - name: Apply ignition manifest
-    command: "podman --runtime runc run {{ podman_mounts }} {{ podman_flags }} {{ mcd_command }}"
+    command: "podman run {{ podman_mounts }} {{ podman_flags }} {{ mcd_command }}"
     vars:
       podman_flags: "--pid=host --privileged --rm --entrypoint=/usr/bin/machine-config-daemon -ti {{ release_image_mcd.stdout }}"
       podman_mounts: "-v /:/rootfs"
