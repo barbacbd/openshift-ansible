@@ -75,7 +75,6 @@
     state: directory
   register: local_temp_dir
   delegate_to: localhost
-  run_once: true
 
 - name: Copy 00-runc-crc.yaml ContainerRuntimeConfig
   copy:
@@ -92,13 +91,8 @@
           defaultRuntime: "runc"
     dest: "{{ local_temp_dir.path }}/openshift-ansible-runc-crc.yaml"
   delegate_to: localhost
-  run_once: true
 
-- name: debug cat the file
-  command: cat {{ local_temp_dir.path }}/openshift-ansible-runc-crc.yaml
-  delegate_to: localhost
-  run_once: true
-  
+
 - name: Apply use-runc ContainerRuntimeConfig
   command: >
     oc apply -f {{ local_temp_dir.path }}/openshift-ansible-runc-crc.yaml
@@ -108,7 +102,6 @@
   - oc_apply.rc == 0
   retries: 36
   delay: 5
-  run_once: true
 
 # it'd probably be better to retrieve the content includes "use-runc" from above?
 # no idea what a reasonable time for MachineConfig to regenerate looks like
