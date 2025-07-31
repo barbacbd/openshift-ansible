@@ -95,7 +95,7 @@
 
 - name: Apply use-runc ContainerRuntimeConfig
   command: >
-    oc apply -f "{{ local_temp_dir.temp_dir.path }}/openshift-ansible-runc-crc.yaml"
+    oc apply -f "{{ temp_dir.path }}/openshift-ansible-runc-crc.yaml"
   delegate_to: localhost
   register: oc_apply
   until:
