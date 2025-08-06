@@ -120,6 +120,7 @@
   delay: 10
   retries: 60
   register: bootstrap_ignition
+  no_log: true
   until:
   - bootstrap_ignition.status is defined
   - bootstrap_ignition.status == 200
