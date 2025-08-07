@@ -162,6 +162,7 @@
     --output=jsonpath='{.data.\.dockerconfigjson}'
   delegate_to: localhost
   register: oc_get
+  no_log: true
   until:
   - oc_get.stdout != ''
   retries: 36
