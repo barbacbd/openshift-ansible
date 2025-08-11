@@ -32,6 +32,17 @@
   when:
   - ansible_fips != (cluster_fips.stdout | bool)
 
+# SELinux is required for RHEL package mode worker
+- name: Check if SELinux is enabled on the RHEL machine
+  command: getenforce
+  register: selinux_status
+  changed_when: false
+
+- name: Fail if SELinux is disabled
+  fail:
+    msg: "SELinux is not enabled (current status: {{ selinux_status.stdout }}). This playbook requires SELinux to be enabled."
+  when: selinux_status.stdout != "Enforcing" and selinux_status.stdout != "Permissive"
+
 # Update the yum cache to ensure that the newest available packages can be
 # installed in the tasks below.
 - name: Update Yum Cache
