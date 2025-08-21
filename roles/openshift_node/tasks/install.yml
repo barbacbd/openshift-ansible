@@ -102,9 +102,9 @@
   command: dnf module enable container-tools:rhel{{ ansible_distribution_major_version }} -y
   ignore_errors: true
 
-- name: Install netavark and fuse-overlayfs from container-tools module
+- name: Install packages from container-tools module
   dnf:
-    name: "netavark, fuse-overlayfs"
+    name: "netavark, fuse-overlayfs, criu"
     state: latest
     allowerasing: true
     disable_gpg_check: true
